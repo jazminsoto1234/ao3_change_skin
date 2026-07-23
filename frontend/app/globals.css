@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+/* Paleta única (sin modo oscuro automático): crema cálido + vino AO3 + rosa.
+   Un solo tema consistente evita que los dark: variants del sistema rompan
+   la identidad visual del editor. */
+@theme {
+  --color-cream: #faf5f1;
+  --color-surface: #ffffff;
+  --color-ink: #3b2b2e;
+  --color-soft: #8b787c;
+  --color-line: #eee0e3;
+  --color-blush: #fbeef1;
+  --color-wine: #9c2140;
+  --color-winedark: #7d1a33;
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* Fondo crema plano: sin degradados decorativos, para que el color lo pongan
+   el preview y los controles del usuario, no el chrome de la app. */
+body {
+  background-color: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-wine);
+  outline-offset: 2px;
+}
+
+input[type="range"] {
+  accent-color: var(--color-wine);
+}

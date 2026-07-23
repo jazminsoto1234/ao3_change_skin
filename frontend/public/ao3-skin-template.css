@@ -1,0 +1,540 @@
+/* =====================================================================
+   AO3 SITE SKIN — TEMPLATE BASE
+   ---------------------------------------------------------------------
+   Estructura basada en las skins de https://github.com/Ao3SiteSkins/Original-skins
+   (referencia directa: Daydreams.CSS). Pensada para pegar tal cual en
+   AO3 y personalizar.
+
+   CÓMO USAR
+   1. AO3 → Preferences → Skins → Site Skins → Create Site Skin.
+   2. Pegá TODO este CSS en el campo "CSS".
+   3. Cambiá los colores/imágenes marcados abajo (find & replace).
+   4. Guardá y activá la skin ("Use").
+
+   RESTRICCIONES DE AO3 (respetadas en este template)
+   - Solo imágenes externas JPG/GIF/PNG vía url('https://...').
+   - Prohibido: @import, @font-face, shorthand `font`. Usá font-family suelto.
+   - Solo fuentes ya instaladas en el SO del lector (con fallback web-safe).
+   - Una sola declaración por propiedad dentro de cada bloque.
+
+   ---------------------------------------------------------------------
+   PALETA — reemplazá estos valores (find & replace del hex):
+     #beaf96  →  FONDO EXTERIOR   (#outer, detrás de todo)
+     #ded7cb  →  SUPERFICIE CLARA (contenido: #main, #dashboard, blurbs)
+     #c3b091  →  SUPERFICIE MEDIA (formularios, tablas, fieldsets)
+     #965e54  →  ACENTO           (footer, botones, headings, current)
+     #729a91  →  ACENTO 2         (detalles: colección, opcional)
+     #ffffff  →  BORDES CLAROS
+     #000000  →  TEXTO FUERTE / labels
+
+   IMÁGENES — reemplazá las URLs marcadas con  /* 🖼️ IMAGEN */
+   Si no querés imágenes, borrá las líneas background-image marcadas.
+   ===================================================================== */
+
+
+/* ---------------------------------------------------------------------
+   1. OCULTAR ELEMENTOS NATIVOS DEL HEADER
+   El template reconstruye el header como banner; escondemos logo/nav
+   por defecto de AO3.
+   --------------------------------------------------------------------- */
+#header h1 sup,
+#header .button,
+#header .landmark,
+#greeting .icon,
+#header .logo {
+  display: none;
+}
+
+
+/* ---------------------------------------------------------------------
+   2. ANCHO Y CENTRADO DEL LAYOUT
+   --------------------------------------------------------------------- */
+#header,
+#inner.wrapper {
+  max-width: 1050px;
+  margin: 0em auto 0em auto;
+}
+
+
+/* ---------------------------------------------------------------------
+   3. FONDOS PRINCIPALES
+   --------------------------------------------------------------------- */
+#main,
+#dashboard,
+li.relationships a,
+.splash .news li,
+.group {
+  background: #ded7cb;
+}
+
+.thread .even,
+.splash .favorite li:nth-of-type(odd) a,
+dl.meta,
+.group .group {
+  background-color: rgba(255,255,255,0.5);
+}
+
+#footer .group,
+fieldset fieldset {
+  background: none;
+}
+
+#footer {
+  background: #965e54;
+}
+
+/* Fondo exterior global. /* 🖼️ IMAGEN */ opcional de textura tileada. */
+#outer,
+#greeting {
+  background: #beaf96 url("https://REEMPLAZAR-textura-fondo.jpg") repeat;
+}
+
+#inner,
+#header {
+  background: rgba(255,255,255,0.5);
+  padding: 1.5em 1em;
+}
+
+
+/* ---------------------------------------------------------------------
+   4. HEADER DECORATIVO (banner)
+   --------------------------------------------------------------------- */
+#main,
+#header .heading,
+#greeting {
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 8px #000000;
+}
+
+/* Banner del título. /* 🖼️ IMAGEN */ ilustración lateral (opcional). */
+#header .heading {
+  margin: 60px 0 20px 0;
+  height: 320px;
+  width: 35%;
+  max-width: 280px;
+  background-color: #ded7cb;
+  background-image: url("https://REEMPLAZAR-imagen-banner.jpg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: auto 550px;
+  border-radius: 20px;
+}
+
+.filters .submit input,
+#header .primary {
+  background: #965e54;
+  border: 1px solid #ffffff;
+  box-shadow: 0 0 8px #000000;
+  color: #ffffff;
+}
+
+/* Título del sitio "Archive of Our Own" */
+#header .heading a {
+  font-size: 2.2em;
+  line-height: 1.2em;
+  letter-spacing: .1em;
+  color: #965e54;
+  background-color: rgba(255,255,255,0.6);
+  text-shadow: -1px 0 0 #c3b091;
+  position: absolute;
+  top: 0.7em;
+  left: 1em;
+}
+
+
+/* ---------------------------------------------------------------------
+   5. GREETING — panel de usuario reconstruido
+   --------------------------------------------------------------------- */
+#greeting {
+  margin: 60px 0 0 0;
+  height: 330px;
+  width: 720px;
+  max-width: 55%;
+  border-radius: 20px;
+}
+
+#greeting .user > li {
+  margin: -0.4em 0em auto auto;
+  clear: left;
+  background: #beaf96;
+}
+
+/* Renombra el nombre de usuario a un saludo genérico */
+#header #greeting a.dropdown-toggle[href*="/users/"] {
+  visibility: hidden;
+  overflow: hidden;
+  letter-spacing: -200em;
+  background: transparent;
+}
+
+#header #greeting a.dropdown-toggle[href*="/users/"]::before {
+  letter-spacing: 0;
+  visibility: visible;
+  content: "Welcome!";
+}
+
+#greeting > ul > li:nth-child(1),
+#greeting > ul > li:nth-child(2),
+#greeting > ul > li:nth-child(3) {
+  width: 10em;
+}
+
+#greeting > ul > li:nth-child(1) {
+  border-top-right-radius: 20px;
+  border-top-left-radius: 20px;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+}
+
+#greeting > ul > li:nth-child(2) {
+  border-left: 2px solid #ffffff;
+}
+
+#greeting > ul > li:nth-child(3) {
+  border-bottom-right-radius: 20px;
+  border-bottom-left-radius: 20px;
+  border-bottom: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+}
+
+#greeting > ul > li:nth-child(1) > ul,
+#greeting > ul > li:nth-child(2) > ul {
+  display: flex;
+  position: static;
+  width: auto;
+  border: none;
+  box-shadow: none;
+  flex-direction: column;
+}
+
+
+/* ---------------------------------------------------------------------
+   6. DROPDOWNS Y MENÚS
+   --------------------------------------------------------------------- */
+#header .dropdown .menu,
+#greeting .dropdown .menu {
+  border: 1px solid #ffffff;
+}
+
+#header .open a,
+#header .dropdown .menu a,
+#greeting .dropdown .menu,
+#greeting .dropdown .menu a {
+  background: #ded7cb;
+  color: rgba(0,0,0,0.9);
+}
+
+
+/* ---------------------------------------------------------------------
+   7. HEADINGS DE SISTEMA / WORKSKIN
+   --------------------------------------------------------------------- */
+.system .latest h3,
+.splash .module h3,
+.system .tweets h3 {
+  background: rgba(0,0,0,0.1);
+  color: #965e54;
+  padding: 0.1em;
+}
+
+#workskin h2,
+.preface h3 a {
+  color: #965e54;
+}
+
+
+/* ---------------------------------------------------------------------
+   8. ESTADOS HOVER / FOCUS / CURRENT
+   --------------------------------------------------------------------- */
+.splash .favorite li:nth-of-type(odd) a:hover,
+.splash .favorite li:nth-of-type(odd) a:focus,
+a.tag:hover,
+a.tag:focus,
+#dashboard a:hover,
+#dashboard a:focus,
+#dashboard .current,
+#header .dropdown .menu a:hover,
+#header .dropdown .menu a:focus {
+  background: #965e54;
+  color: #ffffff;
+}
+
+#header .current,
+#greeting .current,
+#header .user .current {
+  background: rgba(0,0,0,0.4);
+}
+
+
+/* ---------------------------------------------------------------------
+   9. SUPERFICIES MEDIAS (formularios, tablas, fieldsets, modales)
+   --------------------------------------------------------------------- */
+.flash,
+.comment h4.byline,
+.reading h4.viewed,
+div.user.module.group,
+#dashboard.own,
+.filters .submit,
+.filters .group,
+fieldset,
+fieldset fieldset ul,
+.listbox,
+.region,
+#main .verbose legend,
+.verbose fieldset,
+td:hover,
+tr:hover,
+table,
+th,
+.dropdown,
+.toggled form fieldset,
+#modal,
+.ui-sortable li,
+.required .autocomplete,
+.system .intro,
+.symbol .question:hover,
+div.dynamic,
+.dynamic form,
+#ui-datepicker-div {
+  background-color: #c3b091;
+  border-color: #ffffff;
+}
+
+.filters dd ul,
+#dashboard .secondary,
+.post fieldset fieldset {
+  background-color: rgba(255,255,255,0.3);
+  border-color: #ffffff;
+}
+
+select,
+input,
+textarea {
+  background-color: #ffffff;
+}
+
+
+/* ---------------------------------------------------------------------
+   10. BLURBS Y DASHBOARD — bordes, sombras
+   --------------------------------------------------------------------- */
+#dashboard,
+#dashboard.own,
+li.blurb,
+.listbox li.blurb {
+  border-left: 2px solid rgba(0,0,0,0.3);
+  border-right: 2px solid rgba(0,0,0,0.3);
+  border-top: 8px solid rgba(0,0,0,0.3);
+  border-bottom: 8px solid rgba(0,0,0,0.3);
+  border-radius: 5px;
+}
+
+#dashboard > ul {
+  border-color: rgba(0,0,0,0.3);
+}
+
+.blurb .header {
+  border-bottom: 2px solid rgba(0,0,0,0.3);
+}
+
+/* La fecha (p.datetime) va float:right; reservamos espacio a la derecha del
+   título para que un título largo no se le encime. */
+.blurb .header .heading {
+  padding-right: 8.5em;
+}
+
+.blurb .datetime {
+  width: 7em;
+  margin-right: 0;
+  text-align: right;
+}
+
+li.blurb,
+.flash,
+li.comment,
+.wrapper,
+.listbox {
+  box-shadow: 0 1px 2px;
+  outline: none;
+}
+
+
+/* ---------------------------------------------------------------------
+   11. LABELS PERSONALIZADOS (::before) — navegación y colección
+   --------------------------------------------------------------------- */
+#dashboard.own::before {
+  content: "My navigation";
+  line-height: 2;
+  background: rgba(0,0,0,0.4);
+  color: #ffffff;
+  float: none;
+  display: block;
+  padding: 0.5em 0;
+  text-align: center;
+  font-weight: 400;
+  font-size: 100%;
+}
+
+#dashboard::before {
+  content: "Navigation";
+  line-height: 2;
+  background: rgba(0,0,0,0.4);
+  color: #ffffff;
+  float: none;
+  display: block;
+  padding: 0.5em 0;
+  text-align: center;
+  font-weight: 400;
+  font-size: 100%;
+}
+
+#header h2 {
+  background-color: #729a91;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+}
+
+#header h2::before {
+  content: "Collection:";
+  line-height: 2;
+  background: rgba(0,0,0,0.3);
+  color: #ffffff;
+  text-align: left;
+  font-weight: 400;
+}
+
+
+/* ---------------------------------------------------------------------
+   12. NOTICES E ICONOS
+   --------------------------------------------------------------------- */
+.autocomplete .notice,
+.search span.tip,
+.muted.notice,
+#main.dashboard > .notice,
+form .notice,
+ul.notes,
+.caution {
+  background-color: #f3d494;
+  color: rgba(0,0,0,0.9);
+  border-color: #c3b091;
+}
+
+.notice {
+  background-color: rgba(0,0,0,0.2);
+  border-color: rgba(0,0,0,0.6);
+}
+
+.icon {
+  border: 2px solid #ffffff;
+}
+
+.comment div.icon {
+  border-bottom: none;
+}
+
+
+/* ---------------------------------------------------------------------
+   13. TIPOGRAFÍA DE LECTURA
+   --------------------------------------------------------------------- */
+#workskin .notes,
+.reading h4.viewed,
+.bookmark .user,
+.comment .posted,
+.comment .edited {
+  font-size: 90%;
+}
+
+#workskin {
+  text-align: justify;
+}
+
+
+/* ---------------------------------------------------------------------
+   14. LAYOUT DE TAGS EN BLURBS + labels con ::before
+   --------------------------------------------------------------------- */
+ul.tags li.warnings,
+ul.tags li.relationships,
+ul.tags li.characters,
+ul.tags li.freeforms {
+  float: left !important;
+  margin: 0;
+  padding: 2px;
+}
+
+li.warnings + li.relationships,
+li.relationships + li.characters,
+li.characters + li.freeforms,
+li.warnings + li.characters,
+li.warnings + li.freeforms,
+li.relationships + li.freeforms {
+  clear: left;
+}
+
+ul.tags li.warnings:first-child:before {
+  content: "Warnings: ";
+  color: #000000;
+  font-family: Georgia, serif;
+  font-weight: 600;
+}
+
+li.warnings + li.relationships:before {
+  content: "Relationships: ";
+  color: #000000;
+  font-family: Georgia, serif;
+  font-weight: 600;
+}
+
+li.relationships + li.characters:before {
+  content: "Characters: ";
+  color: #000000;
+  font-family: Georgia, serif;
+  font-weight: 600;
+}
+
+li.characters + li.freeforms:before {
+  content: "Other tags: ";
+  color: #000000;
+  font-family: Georgia, serif;
+  font-weight: 600;
+}
+
+li.warnings + li.characters:before {
+  content: "Characters: ";
+  color: #000000;
+  font-family: Georgia, serif;
+  font-weight: 600;
+}
+
+li.warnings + li.freeforms:before {
+  content: "Other tags: ";
+  color: #000000;
+  font-family: Georgia, serif;
+  font-weight: 600;
+}
+
+li.relationships + li.freeforms:before {
+  content: "Other tags: ";
+  color: #000000;
+  font-family: Georgia, serif;
+  font-weight: 600;
+}
+
+li.blurb blockquote p:first-child::before {
+  content: "About: ";
+  color: #000000;
+  font-size: 95%;
+  font-family: Georgia, serif;
+  font-weight: 600;
+}
+
+.blurb ul.series::before {
+  content: "Series: ";
+  color: #000000;
+  font-family: Georgia, serif;
+  font-weight: 600;
+}
+
+.blurb .fandoms::before {
+  content: "Fandom: ";
+  color: #000000;
+  font-family: Georgia, serif;
+  font-weight: 600;
+}

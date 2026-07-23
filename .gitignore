@@ -1,0 +1,51 @@
+.claude
+/database
+
+# editor / OS
+.vscode/
+.idea/
+*.log
+
+# PRD / notas de tareas (excepto README.md)
+*.md
+!README.md
+
+# frontend (Next.js) — dependencies
+/frontend/node_modules
+/frontend/.pnp
+frontend/.pnp.*
+frontend/.yarn/*
+!frontend/.yarn/patches
+!frontend/.yarn/plugins
+!frontend/.yarn/releases
+!frontend/.yarn/versions
+
+# frontend — testing
+/frontend/coverage
+
+# frontend — next.js
+/frontend/.next/
+/frontend/out/
+
+# frontend — production
+/frontend/build
+
+# frontend — misc
+.DS_Store
+*.pem
+
+# frontend — debug
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.pnpm-debug.log*
+
+# frontend — env files
+frontend/.env*
+
+# frontend — vercel
+frontend/.vercel
+
+# frontend — typescript
+frontend/*.tsbuildinfo
+frontend/next-env.d.ts
