@@ -12,7 +12,6 @@ export type BackgroundPosition =
   | 'bottom left'
   | 'bottom right';
 export type BlurbBorderStyle = 'none' | 'solid' | 'dashed' | 'dotted';
-export type SkinMode = 'basic' | 'advanced';
 
 export interface SkinConfig {
   // Colores
@@ -20,8 +19,6 @@ export interface SkinConfig {
   textColor: string;
   linkColor: string;
   linkVisitedColor: string;
-  headerBgColor: string;
-  headerTextColor: string;
 
   // Tipografía
   fontFamily: string;
@@ -42,37 +39,87 @@ export interface SkinConfig {
   blurbBorderColor: string;
   blurbBorderWidth: number; // px
 
-  // Meta
-  mode: SkinMode;
+  // Zonas editables desde el preview. null = se deja el estilo nativo de AO3
+  // (no se genera regla), así un skin solo toca lo que el usuario cambió.
+  headerBgColor: string | null;
+  headerTextColor: string | null;
+  navBgColor: string | null;
+  navTextColor: string | null;
+  headingColor: string | null;
+  headingFont: string | null;
+  blurbBgColor: string | null;
+  tagBgColor: string | null;
+  tagTextColor: string | null;
+  buttonBgColor: string | null;
+  buttonTextColor: string | null;
+  filtersBgColor: string | null;
 }
 
-// Template Sepia
-export const DEFAULT_SKIN_CONFIG: SkinConfig = {
-  backgroundColor: '#f4ecd8',
-  textColor: '#5b4636',
-  linkColor: '#8b5e3c',
-  linkVisitedColor: '#6e4b2a',
-  headerBgColor: '#e8dcc0',
-  headerTextColor: '#5b4636',
+export type RegionField =
+  | 'headerBgColor'
+  | 'headerTextColor'
+  | 'navBgColor'
+  | 'navTextColor'
+  | 'headingColor'
+  | 'headingFont'
+  | 'blurbBgColor'
+  | 'tagBgColor'
+  | 'tagTextColor'
+  | 'buttonBgColor'
+  | 'buttonTextColor'
+  | 'filtersBgColor';
 
-  fontFamily: 'Georgia, serif',
-  fontSize: 16,
-  lineHeight: 1.6,
+export const NATIVE_REGIONS: Pick<SkinConfig, RegionField> = {
+  headerBgColor: null,
+  headerTextColor: null,
+  navBgColor: null,
+  navTextColor: null,
+  headingColor: null,
+  headingFont: null,
+  blurbBgColor: null,
+  tagBgColor: null,
+  tagTextColor: null,
+  buttonBgColor: null,
+  buttonTextColor: null,
+  filtersBgColor: null,
+};
+
+// Template Archive Classic
+export const DEFAULT_SKIN_CONFIG: SkinConfig = {
+  backgroundColor: '#ffffff',
+  textColor: '#2a2a2a',
+  linkColor: '#990000',
+  linkVisitedColor: '#6b0000',
+
+  fontFamily: 'Inter, "Helvetica Neue", Arial, sans-serif',
+  fontSize: 14,
+  lineHeight: 1.5,
   maxWidth: 80,
 
   backgroundImage: null,
   backgroundRepeat: 'no-repeat',
   backgroundSize: 'cover',
   backgroundPosition: 'center',
-  backgroundOverlayColor: '#f4ecd8',
+  backgroundOverlayColor: '#ffffff',
   backgroundOverlayOpacity: 0,
 
   blurbBorderStyle: 'solid',
-  blurbBorderColor: '#c9b896',
+  blurbBorderColor: '#dddddd',
   blurbBorderWidth: 1,
 
-  mode: 'basic',
+  ...NATIVE_REGIONS,
+  headingColor: '#111111',
+  headingFont: 'Lora, Georgia, serif',
 };
+
+// Skins guardados antes de las zonas editables (o drafts viejos en
+// localStorage) no traen los campos nuevos y sí traen `mode`: se completan
+// con null (estilo nativo) para no cambiarles el look.
+export function normalizeConfig(raw: Partial<SkinConfig> & { mode?: unknown }): SkinConfig {
+  const rest = { ...raw };
+  delete rest.mode;
+  return { ...DEFAULT_SKIN_CONFIG, ...NATIVE_REGIONS, ...rest };
+}
 
 // B0-2: Skin — fila de BD
 export interface Skin {

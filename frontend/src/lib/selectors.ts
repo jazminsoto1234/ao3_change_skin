@@ -302,9 +302,45 @@ export const SELECTORS = {
     'form blockquote.userstuff',
     'div.comment',
     'li.comment',
-    '#inner .module .heading',
+    // Los headings del .header.module de cada blurb quedan sin borde: si no,
+    // título y fandom aparecen encerrados en cajitas dentro de la tarjeta.
+    '#inner .module .heading:not(.blurb *)',
     '.bookmark .status span',
   ],
+
+  // === Zonas editables desde el preview (campos nullable de SkinConfig) ===
+  // Los que viven en #main empiezan con "#inner #main" → boostSpecificity los
+  // deja como "#outer #inner #main ..." (3 ids), para ganarle a los genéricos
+  // de arriba que ya llevan 3 ids vía :not(#footer):not(#footer *):not(#header *).
+  HEADER_BG_SELECTORS: ['#header'],
+  HEADER_TEXT_SELECTORS: [
+    '#header .heading a',
+    '#header .heading a:visited',
+    '#header .user a',
+    '#header #greeting',
+  ],
+  NAV_BG_SELECTORS: ['#header ul.primary'],
+  NAV_TEXT_SELECTORS: ['#header ul.primary a', '#header ul.primary a:visited'],
+  HEADING_COLOR_SELECTORS: [
+    '#inner #main h2.heading',
+    '#inner #main h3.heading',
+    '#inner #main .blurb .heading',
+    '#inner #main .blurb h5.fandoms a',
+  ],
+  HEADING_FONT_SELECTORS: [
+    '#header .heading',
+    '#inner #main h2.heading',
+    '#inner #main h3.heading',
+    '#inner #main .blurb h4.heading a:first-child',
+  ],
+  BLURB_BG_SELECTORS: ['#inner #main li.blurb'],
+  TAG_SELECTORS: ['#inner #main ul.tags a.tag', '#inner #main ul.tags a.tag:visited'],
+  BUTTON_SELECTORS: [
+    '#inner #main input[type="submit"]',
+    '#inner #main button',
+    '#inner #main .submit input',
+  ],
+  FILTERS_BG_SELECTORS: ['#inner #main form.filters fieldset'],
 } as const;
 
 export type SelectorKey = keyof typeof SELECTORS;

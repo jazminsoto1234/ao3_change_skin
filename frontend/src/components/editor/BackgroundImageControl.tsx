@@ -10,30 +10,30 @@ import { ColorPicker } from './ColorPicker';
 import { SizeSlider } from './SizeSlider';
 
 const REPEAT_OPTIONS: { value: BackgroundRepeat; label: string }[] = [
-  { value: 'no-repeat', label: 'No repetir' },
-  { value: 'repeat', label: 'Repetir (mosaico)' },
-  { value: 'repeat-x', label: 'Repetir a lo ancho' },
-  { value: 'repeat-y', label: 'Repetir a lo alto' },
+  { value: 'no-repeat', label: 'No repeat' },
+  { value: 'repeat', label: 'Tile' },
+  { value: 'repeat-x', label: 'Repeat horizontally' },
+  { value: 'repeat-y', label: 'Repeat vertically' },
 ];
 const SIZE_OPTIONS: { value: BackgroundSize; label: string }[] = [
-  { value: 'auto', label: 'Tamaño original' },
-  { value: 'cover', label: 'Cubrir toda la pantalla' },
-  { value: 'contain', label: 'Ajustar sin recortar' },
+  { value: 'auto', label: 'Original size' },
+  { value: 'cover', label: 'Cover the screen' },
+  { value: 'contain', label: 'Fit without cropping' },
 ];
 const POSITION_OPTIONS: { value: BackgroundPosition; label: string }[] = [
-  { value: 'center', label: 'Centro' },
-  { value: 'top', label: 'Arriba' },
-  { value: 'bottom', label: 'Abajo' },
-  { value: 'left', label: 'Izquierda' },
-  { value: 'right', label: 'Derecha' },
-  { value: 'top left', label: 'Arriba a la izquierda' },
-  { value: 'top right', label: 'Arriba a la derecha' },
-  { value: 'bottom left', label: 'Abajo a la izquierda' },
-  { value: 'bottom right', label: 'Abajo a la derecha' },
+  { value: 'center', label: 'Center' },
+  { value: 'top', label: 'Top' },
+  { value: 'bottom', label: 'Bottom' },
+  { value: 'left', label: 'Left' },
+  { value: 'right', label: 'Right' },
+  { value: 'top left', label: 'Top left' },
+  { value: 'top right', label: 'Top right' },
+  { value: 'bottom left', label: 'Bottom left' },
+  { value: 'bottom right', label: 'Bottom right' },
 ];
 
 const fieldClass =
-  'rounded-lg border border-line bg-surface px-2.5 py-1.5 text-sm text-ink shadow-sm focus:border-wine focus:outline-none';
+  'rounded-md border border-line bg-surface px-2.5 py-1.5 text-[13px] text-ink focus:border-ink focus:outline-none';
 
 type ImageStatus = 'idle' | 'loading' | 'ok' | 'error';
 
@@ -78,33 +78,33 @@ export function BackgroundImageControl() {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-col gap-1.5 text-sm">
+      <div className="flex flex-col gap-1.5 text-[13px]">
         <label htmlFor="background-image-url" className="font-medium">
-          Link de la imagen
+          Image link
         </label>
         <input
           id="background-image-url"
           type="text"
           value={urlDraft}
           onChange={(event) => setUrlDraft(event.target.value.trim())}
-          placeholder="https://i.imgur.com/ejemplo.jpg"
+          placeholder="https://i.imgur.com/example.jpg"
           className={`w-full ${fieldClass}`}
         />
         {displayStatus === 'error' && (
-          <p className="rounded-lg bg-red-50 px-2.5 py-2 text-xs text-red-700">
-            No se pudo cargar la imagen. Necesitas un link directo a la imagen (termina en
-            .jpg/.png/.gif). En Imgur: abre la imagen en su propia pestaña, click derecho →
-            &quot;Copiar dirección de imagen&quot;.
+          <p className="rounded-md bg-red-50 px-2.5 py-2 text-xs text-red-700">
+            Couldn&apos;t load the image. You need a direct image link (ending in
+            .jpg/.png/.gif). On Imgur: open the image in its own tab, right click →
+            &quot;Copy image address&quot;.
           </p>
         )}
         {displayStatus === 'ok' && (
-          <p className="text-xs font-medium text-green-700">✓ Imagen cargada correctamente.</p>
+          <p className="text-xs font-medium text-green-700">✓ Image loaded.</p>
         )}
       </div>
 
-      <div className="flex items-center justify-between gap-3 text-sm">
+      <div className="flex items-center justify-between gap-3 text-[13px]">
         <label htmlFor="background-repeat" className="font-medium">
-          Repetición
+          Repeat
         </label>
         <select
           id="background-repeat"
@@ -122,9 +122,9 @@ export function BackgroundImageControl() {
         </select>
       </div>
 
-      <div className="flex items-center justify-between gap-3 text-sm">
+      <div className="flex items-center justify-between gap-3 text-[13px]">
         <label htmlFor="background-size" className="font-medium">
-          Tamaño
+          Size
         </label>
         <select
           id="background-size"
@@ -142,9 +142,9 @@ export function BackgroundImageControl() {
         </select>
       </div>
 
-      <div className="flex items-center justify-between gap-3 text-sm">
+      <div className="flex items-center justify-between gap-3 text-[13px]">
         <label htmlFor="background-position" className="font-medium">
-          Posición
+          Position
         </label>
         <select
           id="background-position"
@@ -163,13 +163,13 @@ export function BackgroundImageControl() {
       </div>
 
       <ColorPicker
-        label="Capa de color encima"
+        label="Color overlay"
         value={config.backgroundOverlayColor}
         onChange={(backgroundOverlayColor) => updateConfig({ backgroundOverlayColor })}
       />
 
       <SizeSlider
-        label="Intensidad de la capa"
+        label="Overlay strength"
         value={config.backgroundOverlayOpacity}
         onChange={(backgroundOverlayOpacity) => updateConfig({ backgroundOverlayOpacity })}
         min={0}
@@ -177,7 +177,7 @@ export function BackgroundImageControl() {
         step={0.05}
       />
       <p className="text-xs text-soft">
-        La capa de color se pone entre la imagen y el texto para que se pueda leer bien.
+        The overlay sits between the image and the text so it stays readable.
       </p>
     </div>
   );

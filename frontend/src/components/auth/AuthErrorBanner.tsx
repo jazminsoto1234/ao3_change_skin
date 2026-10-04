@@ -16,13 +16,13 @@ export function AuthErrorBanner({ show }: AuthErrorBannerProps) {
   return (
     <div className="flex items-center justify-between gap-4 border-b border-red-100 bg-red-50 px-4 py-2.5 text-sm text-red-800">
       <span>
-        No pudimos completar tu inicio de sesión. El enlace puede haber
-        expirado o ya haberse usado — intenta enviarte uno nuevo.
+        We couldn&apos;t log you in. The link may have expired or already
+        been used — try sending yourself a new one.
       </span>
       <button
         type="button"
         onClick={() => setDismissed(true)}
-        aria-label="Cerrar aviso"
+        aria-label="Dismiss"
         className="shrink-0 text-red-800/60 hover:text-red-800"
       >
         ✕

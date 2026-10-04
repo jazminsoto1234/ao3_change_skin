@@ -1,21 +1,21 @@
 import { describe, it, expect } from 'vitest';
 import { generateCSS } from './cssGenerator';
-import { DEFAULT_SKIN_CONFIG } from '../types/skin';
+import { DEFAULT_SKIN_CONFIG, NATIVE_REGIONS, normalizeConfig } from '../types/skin';
 import type { SkinConfig } from '../types/skin';
 
 describe('generateCSS', () => {
-  it('produce CSS válido con config default (Sepia)', () => {
+  it('produce CSS válido con config default (Archive Classic)', () => {
     const css = generateCSS(DEFAULT_SKIN_CONFIG);
     expect(css).toContain('/* ----------------- Colores principales ----------------- */');
-    expect(css).toContain('background-color: #f4ecd8');
-    expect(css).toContain('color: #5b4636');
+    expect(css).toContain('background-color: #ffffff');
+    expect(css).toContain('color: #2a2a2a');
     expect(css).toContain('/* ----------------- Tipografía ----------------- */');
-    expect(css).toContain('font-family: Georgia, serif');
-    expect(css).toContain('font-size: 16px');
-    expect(css).toContain('line-height: 1.6');
+    expect(css).toContain('font-family: Inter, "Helvetica Neue", Arial, sans-serif');
+    expect(css).toContain('font-size: 14px');
+    expect(css).toContain('line-height: 1.5');
     expect(css).toContain('max-width: 80ch');
     expect(css).toContain('/* ----------------- Bordes ----------------- */');
-    expect(css).toContain('border: 1px solid #c9b896');
+    expect(css).toContain('border: 1px solid #dddddd');
     expect(css).not.toContain('/* ----------------- Imagen de fondo ----------------- */');
   });
 
@@ -72,10 +72,38 @@ describe('generateCSS', () => {
     expect(css).toContain('rgba(255, 0, 0, 0.50)');
   });
 
-  it('mode básico vs avanzado no cambia el CSS generado', () => {
-    const basicCSS = generateCSS({ ...DEFAULT_SKIN_CONFIG, mode: 'basic' });
-    const advancedCSS = generateCSS({ ...DEFAULT_SKIN_CONFIG, mode: 'advanced' });
-    expect(basicCSS).toBe(advancedCSS);
+  it('zonas en null no generan bloque de zonas personalizadas', () => {
+    const css = generateCSS({ ...DEFAULT_SKIN_CONFIG, ...NATIVE_REGIONS });
+    expect(css).not.toContain('Zonas personalizadas');
+  });
+
+  it('navBgColor quita la textura nativa de la barra y pinta el color', () => {
+    const css = generateCSS({ ...DEFAULT_SKIN_CONFIG, navBgColor: '#123456' });
+    expect(css).toContain('#outer #header ul.primary {\n  background-color: #123456;\n  background-image: none;\n}');
+  });
+
+  it('zonas de #main suben a 3 ids para ganarle a .group:not(#footer):not(#footer *):not(#header *)', () => {
+    const css = generateCSS({ ...DEFAULT_SKIN_CONFIG, blurbBgColor: '#abcdef', filtersBgColor: '#fedcba' });
+    expect(css).toContain('#outer #inner #main li.blurb {\n  background-color: #abcdef;\n}');
+    expect(css).toContain('#outer #inner #main form.filters fieldset {\n  background-color: #fedcba;\n}');
+  });
+
+  it('tags con fondo se emiten como chips sin subrayado', () => {
+    const css = generateCSS({ ...DEFAULT_SKIN_CONFIG, tagBgColor: '#eeeeee', tagTextColor: '#990000' });
+    expect(css).toContain('  color: #990000;\n  background-color: #eeeeee;\n  text-decoration: none;');
+  });
+
+  it('botones quitan el degradado nativo', () => {
+    const css = generateCSS({ ...DEFAULT_SKIN_CONFIG, buttonBgColor: '#000000', buttonTextColor: '#ffffff' });
+    expect(css).toContain('#outer #inner #main input[type="submit"]');
+    expect(css).toContain('  background-color: #000000;\n  background-image: none;\n  color: #ffffff;');
+  });
+
+  it('normalizeConfig completa skins viejos con zonas nativas y descarta mode', () => {
+    const old = { ...DEFAULT_SKIN_CONFIG, headingColor: undefined, mode: 'basic' } as unknown as SkinConfig;
+    const config = normalizeConfig(old);
+    expect('mode' in config).toBe(false);
+    expect(config.navBgColor).toBeNull();
   });
 
   it('nunca genera @import de Google Fonts, ni siquiera con fontFamily custom (bug: AO3 filtra @import de web fonts silenciosamente, el bloque generado antes no hacía nada en el sitio real)', () => {

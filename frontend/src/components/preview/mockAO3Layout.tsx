@@ -1,11 +1,14 @@
 // F4-1: markup estático que replica la estructura real de AO3.
-// Página modelada: works-index / dashboard de usuario (3 columnas), que es
-// donde se ve la mayor parte del skin (blurbs, tags, stats, dashboard, filtros).
+// Página modelada: works-index de un tag (listado + Sort and Filter), que es
+// donde se ve la mayor parte del skin (blurbs, tags, stats, filtros).
+// Cada zona clickeable lleva data-edit (ver editRegions.ts) para abrir la
+// nube de edición del preview.
 // Estructura fiel al DOM real de AO3 (ver selectors_vf.md §13).
 // Todo id/clase de AO3 sale de SELECTORS (src/lib/selectors.ts) — nunca strings
 // hardcodeados. Wrappers estructurales sin equivalente en SELECTORS (layout no
 // estilizado por generateCSS) sí pueden ser literales.
 import { SELECTORS } from '@/lib/selectors';
+import { EDIT_ATTR, type EditRegion } from '@/lib/editRegions';
 
 interface Token {
   tag?: string;
@@ -43,101 +46,139 @@ function classOf(selector: string, index = -1): string {
   return token(selector, index).classes.join(' ');
 }
 
-// Avatar inline (data URI) para no depender de red en el iframe sandbox.
-const AVATAR =
-  "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16'><rect width='16' height='16' rx='2' fill='%23b98'/></svg>";
+const edit = (region: EditRegion) => ({ [EDIT_ATTR]: region });
 
 interface BlurbData {
   title: string;
   author: string;
   date: string;
   fandom: string;
-  rating: string;
-  relationship: string;
-  characters: string[];
-  freeforms: string[];
+  tags: string[];
   summary: string;
   language: string;
   words: string;
   chapters: string;
+  comments: string;
   kudos: string;
+  bookmarks: string;
   hits: string;
 }
 
 const BLURBS: BlurbData[] = [
   {
-    title: 'Bajo la lluvia de octubre',
-    author: 'autora_ejemplo',
-    date: '06 May 2024',
-    fandom: 'Fandom Original',
-    rating: 'G',
-    relationship: 'Personaje A/Personaje B',
-    characters: ['Personaje A', 'Personaje B'],
-    freeforms: ['Fluff', 'Slow Burn'],
+    title: 'A Sweet Double Prompt Hill',
+    author: 'RebeccaMySweet',
+    date: '21 Jan 2024',
+    fandom: 'Ted Lasso (TV)',
+    tags: [
+      'Sam Obisanya/Rebecca Welton',
+      'Keeley Jones/Roy Kent',
+      'Sam Obisanya',
+      'Rebecca Welton',
+      'Ted Lasso',
+      'Keeley Jones',
+      'Alternate Universe - Historical',
+      'Fluff',
+      'Anxiety',
+      'Established Relationship',
+    ],
     summary:
-      'Una tarde cualquiera de octubre, dos personas que se conocen hace años descubren algo que llevaban tiempo evitando decirse.',
-    language: 'Español',
-    words: '1.427',
-    chapters: '1/1',
-    kudos: '212',
-    hits: '3.481',
+      "I will write and ask for prompts on Tumblr. These will mostly be short little drabbles, but I thought I'd post them here for people to read. Some of these I'm quite enamoured with and can't rule out the possibility that they may one day become longer stories.",
+    language: 'English',
+    words: '3,954',
+    chapters: '13/17',
+    comments: '15',
+    kudos: '74',
+    bookmarks: '4',
+    hits: '1575',
   },
   {
-    title: 'Cartas que nunca envié y otras historias del invierno largo',
-    author: 'otra_persona',
-    date: '03 May 2024',
-    fandom: 'Otro Fandom',
-    rating: 'T',
-    relationship: 'Personaje C/Personaje D',
-    characters: ['Personaje C', 'Personaje D', 'Personaje E'],
-    freeforms: ['Angst', 'Hurt/Comfort', 'Final feliz'],
+    title: 'supposed to(o) sweat you out',
+    author: 'angeldustonfield',
+    date: '12 Jan 2024',
+    fandom: 'Ted Lasso (TV)',
+    tags: [
+      'Sam Obisanya/Rebecca Welton',
+      'Sam Obisanya',
+      'Rebecca Welton',
+      'Ted Lasso',
+      'Roy Kent',
+      'Post-Canon',
+      'Emotional Hurting',
+      'First Time',
+      'Comfort',
+      'Heavy Angst',
+    ],
     summary:
-      'Escribió cada carta sabiendo que jamás las mandaría. Hasta que un día alguien las encontró.',
-    language: 'Español',
-    words: '8.902',
-    chapters: '4/12',
-    kudos: '57',
-    hits: '1.361',
+      "This was supposed to be a simple training day, but Rebecca couldn't keep her eyes off the pitch. Or rather, off him. When the rain starts pouring down, things take an unexpected, steamier turn in the locker room.",
+    language: 'English',
+    words: '5,120',
+    chapters: '1/1',
+    comments: '28',
+    kudos: '112',
+    bookmarks: '18',
+    hits: '2450',
   },
+  {
+    title: 'The Gaffer and the Owner',
+    author: 'richmondtilldeath',
+    date: '03 Jan 2024',
+    fandom: 'Ted Lasso (TV)',
+    tags: ['Sam Obisanya/Rebecca Welton', 'Slow Burn', 'Mutual Pining', 'Happy Ending'],
+    summary:
+      'Five times Sam almost told Rebecca how he felt, and the one time he finally did, halfway through a very long board meeting.',
+    language: 'English',
+    words: '12,488',
+    chapters: '6/6',
+    comments: '41',
+    kudos: '389',
+    bookmarks: '57',
+    hits: '6012',
+  },
+];
+
+const FILTER_GROUPS = [
+  'Ratings',
+  'Warnings',
+  'Categories',
+  'Fandoms',
+  'Characters',
+  'Relationships',
+  'Additional Tags',
 ];
 
 function Blurb({ data }: { data: BlurbData }) {
   return (
-    <li className="work blurb group" role="article">
+    <li className="work blurb group" role="article" {...edit('blurb')}>
       <div className="header module">
-        {/* Badges 2x2 a la izquierda: rating, categoría, advertencia, completo */}
+        {/* Badges 2x2: rating, categoría, advertencias, estado */}
         <ul className={classOf(SELECTORS.BLURB_REQUIRED_TAGS_GLOBAL)}>
           <li>
-            <span className="rating" title="Rating">
-              {data.rating}
-            </span>
+            <span className="rating" title="Rating" />
           </li>
           <li>
-            <span className="category" title="Categoría">
-              &nbsp;
-            </span>
+            <span className="category" title="Category" />
           </li>
           <li>
-            <span className="warnings" title="Advertencias">
-              &nbsp;
-            </span>
+            <span className="warnings" title="Warnings" />
           </li>
           <li>
-            <span className="complete" title="Completo">
-              ✓
-            </span>
+            <span className="iswip" title="Status" />
           </li>
         </ul>
         <h4 className={classOf(SELECTORS.BLURB_H4_HEADING)}>
-          <a href="#">{data.title}</a> by{' '}
-          <a href="#" rel="author">
+          <a href="#" {...edit('link')}>
+            {data.title}
+          </a>{' '}
+          by{' '}
+          <a href="#" rel="author" {...edit('link')}>
             {data.author}
           </a>
         </h4>
         <p className={classOf(SELECTORS.BLURB_DATETIME)}>{data.date}</p>
         <h5 className={classOf(SELECTORS.BLURB_FANDOMS_HEADING)}>
-          <span className={classOf(SELECTORS.LANDMARK)}>Fandoms:</span>{' '}
-          <a className={classOf(SELECTORS.A_TAG)} href="#">
+          <span className={classOf(SELECTORS.LANDMARK)}>Fandom:</span>{' '}
+          <a className={classOf(SELECTORS.A_TAG)} href="#" {...edit('heading')}>
             {data.fandom}
           </a>
         </h5>
@@ -145,27 +186,10 @@ function Blurb({ data }: { data: BlurbData }) {
 
       <h6 className={classOf(SELECTORS.LANDMARK_HEADING)}>Tags</h6>
       <ul className={`${classOf(SELECTORS.TAGS_UL)} commas`}>
-        <li className={classOf(SELECTORS.TAGS_LI_WARNINGS)}>
-          <a className={classOf(SELECTORS.A_TAG)} href="#">
-            Sin advertencias
-          </a>
-        </li>
-        <li className={classOf(SELECTORS.TAGS_LI_RELATIONSHIPS)}>
-          <a className={classOf(SELECTORS.A_TAG)} href="#">
-            {data.relationship}
-          </a>
-        </li>
-        {data.characters.map((c) => (
-          <li key={c} className={classOf(SELECTORS.TAGS_LI_CHARACTERS)}>
-            <a className={classOf(SELECTORS.A_TAG)} href="#">
-              {c}
-            </a>
-          </li>
-        ))}
-        {data.freeforms.map((f) => (
-          <li key={f} className={classOf(SELECTORS.TAGS_LI_FREEFORMS)}>
-            <a className={classOf(SELECTORS.A_TAG)} href="#">
-              {f}
+        {data.tags.map((tag) => (
+          <li key={tag} className={classOf(SELECTORS.TAGS_LI_FREEFORMS)}>
+            <a className={classOf(SELECTORS.A_TAG)} href="#" {...edit('tag')}>
+              {tag}
             </a>
           </li>
         ))}
@@ -177,18 +201,27 @@ function Blurb({ data }: { data: BlurbData }) {
       </blockquote>
 
       <dl className="stats">
-        <dt className="language">Language:</dt>
-        <dd className="language">{data.language}</dd>
-        <dt className="words">Words:</dt>
-        <dd className="words">{data.words}</dd>
-        <dt className="chapters">Chapters:</dt>
-        <dd className="chapters">{data.chapters}</dd>
-        <dt className="kudos">Kudos:</dt>
-        <dd className="kudos">
-          <a href="#">{data.kudos}</a>
-        </dd>
-        <dt className="hits">Hits:</dt>
-        <dd className="hits">{data.hits}</dd>
+        <div>
+          <dt className="language">Language:</dt> <dd className="language">{data.language}</dd>
+        </div>
+        <div>
+          <dt className="words">Words:</dt> <dd className="words">{data.words}</dd>
+        </div>
+        <div>
+          <dt className="chapters">Chapters:</dt> <dd className="chapters">{data.chapters}</dd>
+        </div>
+        <div>
+          <dt className="comments">Comments:</dt> <dd className="comments">{data.comments}</dd>
+        </div>
+        <div>
+          <dt className="kudos">Kudos:</dt> <dd className="kudos">{data.kudos}</dd>
+        </div>
+        <div>
+          <dt className="bookmarks">Bookmarks:</dt> <dd className="bookmarks">{data.bookmarks}</dd>
+        </div>
+        <div>
+          <dt className="hits">Hits:</dt> <dd className="hits">{data.hits}</dd>
+        </div>
       </dl>
     </li>
   );
@@ -196,31 +229,33 @@ function Blurb({ data }: { data: BlurbData }) {
 
 export function MockAO3Layout() {
   return (
-    <div id={idOf(SELECTORS.OUTER)}>
+    <div id={idOf(SELECTORS.OUTER)} {...edit('page')}>
       <div id={idOf(SELECTORS.INNER)} className="wrapper">
-        <header id={idOf(SELECTORS.HEADER)} className="region" role="banner">
-          <h1 className={classOf(SELECTORS.HEADER_HEADING_A, -2)}>
-            <a href="#">Archive of Our Own</a>
-          </h1>
+        <header id={idOf(SELECTORS.HEADER)} className="region" role="banner" {...edit('header')}>
+          <div className="top">
+            <h1 className={classOf(SELECTORS.HEADER_HEADING_A, -2)}>
+              <a href="#">Archive of Our Own</a>
+            </h1>
+            <ul className="user navigation actions">
+              <li>
+                <a href="#">Fandoms</a>
+              </li>
+              <li>
+                <a href="#">Browse</a>
+              </li>
+              <li>
+                <a href="#">Search</a>
+              </li>
+              <li>
+                <a href="#">About</a>
+              </li>
+            </ul>
+          </div>
 
-          {/* Saludo / acciones de usuario — arriba a la derecha */}
-          <ul className="user navigation actions">
-            <li id={idOf(SELECTORS.HEADER_GREETING)}>
-              <img className="icon" src={AVATAR} alt="" width={16} height={16} />
-              <span> Hi, lectora!</span>
-            </li>
-            <li>
-              <a href="#">Post</a>
-            </li>
-            <li>
-              <a href="#">Log Out</a>
-            </li>
-          </ul>
-
-          {/* Barra de navegación roja full-width con buscador al final */}
           <ul
             className={`${classOf(SELECTORS.HEADER_PRIMARY)} navigation actions`}
             role="navigation"
+            {...edit('nav')}
           >
             <li className="dropdown">
               <a href="#">Fandoms</a>
@@ -236,105 +271,93 @@ export function MockAO3Layout() {
             </li>
             <li className="search" role="search">
               <form id="search">
-                <input type="text" placeholder="Search works" aria-label="Search" />
-                <input type="submit" value="Search" />
+                <input type="text" placeholder="Search works..." aria-label="Search works" />
+                <span className="magnifier" aria-hidden />
               </form>
             </li>
           </ul>
         </header>
 
-        <main id={idOf(SELECTORS.MAIN)} className="dashboard region" role="main">
-          {/* Sidebar izquierdo: navegación del usuario */}
-          <div id={idOf(SELECTORS.DASHBOARD)} className="own">
-            <ul className="navigation actions">
-              <li>
-                <a href="#">Dashboard</a>
+        <main id={idOf(SELECTORS.MAIN)} className="works-index region" role="main">
+          <div className="listing">
+            <h2 className={classOf(SELECTORS.HEADING_H2, -1)} {...edit('heading')}>
+              1 - 20 of 42 Works in Sam Obisanya/Rebecca Welton
+            </h2>
+            <ol className="pagination actions">
+              <li className="previous">
+                <span>← Previous</span>
               </li>
               <li>
-                <a href="#">Profile</a>
+                <span className={classOf(SELECTORS.CURRENT)}>1</span>
               </li>
               <li>
-                <a href="#">Pseuds</a>
-              </li>
-            </ul>
-            <ul className="navigation actions">
-              <li className={classOf(SELECTORS.CURRENT)}>
-                <a href="#">Works (27)</a>
+                <a href="#">2</a>
               </li>
               <li>
-                <a href="#">Series (0)</a>
+                <a href="#">3</a>
               </li>
-              <li>
-                <a href="#">Bookmarks (0)</a>
+              <li className="next">
+                <a href="#" {...edit('link')}>
+                  Next →
+                </a>
               </li>
-              <li>
-                <a href="#">Collections (0)</a>
-              </li>
-            </ul>
-            <ul className="navigation actions">
-              <li>
-                <a href="#">Gifts (0)</a>
-              </li>
-            </ul>
+            </ol>
+            <ol className="work index group">
+              {BLURBS.map((b) => (
+                <Blurb key={b.title} data={b} />
+              ))}
+            </ol>
           </div>
 
-          {/* Sidebar derecho: filtros */}
-          <div className="filters">
-            <form>
-              <fieldset>
-                <h3 className={classOf(SELECTORS.HEADING_H3)}>Sort and Filter</h3>
-                <div className="actions">
+          <form className="filters" id="work-filters" {...edit('filters')}>
+            <fieldset>
+              <h3 className={classOf(SELECTORS.HEADING_H3)} {...edit('heading')}>
+                Sort and Filter
+              </h3>
+              <dl className="sort">
+                <dt>
                   <label htmlFor="sortby">Sort by</label>
+                </dt>
+                <dd>
                   <select id="sortby" defaultValue="updated">
                     <option value="updated">Date Updated</option>
                     <option value="posted">Date Posted</option>
                     <option value="kudos">Kudos</option>
                   </select>
-                </div>
-                <fieldset className="listbox group">
-                  <h4 className={classOf(SELECTORS.LISTBOX_HEADING, -1)}>Include</h4>
-                  <ul className="options index group">
-                    <li>▸ Ratings</li>
-                    <li>▸ Warnings</li>
-                    <li>▸ Categories</li>
-                    <li>▸ Fandoms</li>
-                    <li>▸ Characters</li>
-                    <li>▸ Relationships</li>
-                    <li>▸ Additional Tags</li>
-                  </ul>
-                </fieldset>
-                <div className="submit actions">
-                  <input type="submit" value="Sort and Filter" />
-                </div>
-              </fieldset>
-            </form>
-          </div>
-
-          {/* Listado central de works */}
-          <h2 className={classOf(SELECTORS.HEADING_H2, -1)}>
-            1 - 2 of 27 Works by lectora
-          </h2>
-          <ol className="pagination actions">
-            <li>
-              <span>← Previous</span>
-            </li>
-            <li>
-              <a className={classOf(SELECTORS.CURRENT)} href="#">
-                1
-              </a>
-            </li>
-            <li>
-              <a href="#">2</a>
-            </li>
-            <li>
-              <a href="#">Next →</a>
-            </li>
-          </ol>
-          <ol className="work index group">
-            {BLURBS.map((b) => (
-              <Blurb key={b.title} data={b} />
-            ))}
-          </ol>
+                </dd>
+              </dl>
+              <ul className="expandable">
+                {FILTER_GROUPS.map((group) => (
+                  <li key={group}>
+                    <span>{group}</span>
+                    <span className="arrow" aria-hidden>
+                      ▶
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <dl className="more">
+                <dt>
+                  <label htmlFor="within">Search within results</label>
+                </dt>
+                <dd>
+                  <input id="within" type="text" />
+                </dd>
+                <dt>
+                  <label htmlFor="language">Language</label>
+                </dt>
+                <dd>
+                  <select id="language" defaultValue="">
+                    <option value="" />
+                    <option value="en">English</option>
+                  </select>
+                </dd>
+              </dl>
+              <p className="submit actions">
+                <input type="submit" value="Sort and Filter" {...edit('button')} />
+              </p>
+            </fieldset>
+          </form>
         </main>
 
         <footer id={idOf(SELECTORS.FOOTER)} role="contentinfo">
@@ -349,7 +372,7 @@ export function MockAO3Layout() {
               <a href="#">Terms of Service</a>
             </li>
           </ul>
-          <p>Vista previa de estilo — no es el sitio real.</p>
+          <p>Style preview — this is not the real site.</p>
         </footer>
       </div>
     </div>

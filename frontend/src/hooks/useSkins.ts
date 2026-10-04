@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { supabase, SKINS_TABLE } from '@/lib/supabase';
-import type { CreateSkinPayload, Skin, UpdateSkinPayload } from '@/types/skin';
+import { normalizeConfig, type CreateSkinPayload, type Skin, type UpdateSkinPayload } from '@/types/skin';
 import { useSkinStore } from '@/store/useSkinStore';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -18,7 +18,7 @@ export async function fetchSkins(): Promise<Skin[]> {
     return [];
   }
 
-  return data ?? [];
+  return (data ?? []).map((skin) => ({ ...skin, config: normalizeConfig(skin.config) }));
 }
 
 // B4-2: guardar skin nueva. Sin usuario autenticado no hay insert posible (RLS lo rechaza igual).
@@ -76,7 +76,7 @@ export async function deleteSkin(id: string): Promise<boolean> {
 
 // B4-5: cargar skin en el editor. Sin llamada a BD, solo aplica config al store.
 export function loadSkin(skin: Skin): void {
-  useSkinStore.getState().setConfig(skin.config);
+  useSkinStore.getState().loadSavedSkin(skin);
 }
 
 // B6-1: hook que agrupa B4-1..B4-5 con estado y auto-fetch ligado a la sesión.
@@ -93,7 +93,7 @@ export function useSkins() {
       const data = await fetchSkins();
       setSkins(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al cargar skins');
+      setError(err instanceof Error ? err.message : 'Could not load your skins');
     } finally {
       setLoading(false);
     }

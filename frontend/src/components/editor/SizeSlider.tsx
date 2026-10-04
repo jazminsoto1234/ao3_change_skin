@@ -1,6 +1,8 @@
 'use client';
 
 // F3-1: slider genérico reutilizable (fontSize, lineHeight, maxWidth, blurbBorderWidth, etc.)
+import { useId } from 'react';
+
 interface SizeSliderProps {
   label: string;
   value: number;
@@ -20,15 +22,15 @@ export function SizeSlider({
   step = 1,
   unit = '',
 }: SizeSliderProps) {
-  const inputId = `slider-${label.toLowerCase().replace(/\s+/g, '-')}`;
+  const inputId = useId();
 
   return (
-    <div className="flex flex-col gap-1.5 text-sm">
+    <div className="flex flex-col gap-1.5 text-[13px]">
       <div className="flex items-center justify-between">
         <label htmlFor={inputId} className="font-medium">
           {label}
         </label>
-        <span className="rounded-md bg-blush px-2 py-0.5 font-mono text-xs text-wine">
+        <span className="rounded bg-canvas px-2 py-0.5 font-mono text-xs text-ink">
           {value}
           {unit}
         </span>

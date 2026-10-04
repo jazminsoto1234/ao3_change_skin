@@ -32,6 +32,7 @@ export function generateCSS(config: SkinConfig): string {
     blocks.push(generateBackgroundImage(config));
   }
   blocks.push(generateBorders(config));
+  blocks.push(generateRegions(config));
 
   return blocks.filter(Boolean).join('\n\n');
 }
@@ -64,9 +65,8 @@ function generateColors(config: SkinConfig): string {
   // AO3 reusa .group/.secondary/.region/a también dentro de #footer y
   // #header; esos selectores genéricos ya excluyen ambos con :not(), así que
   // el footer y todo el header (logo, greeting, Post/Log Out, barra
-  // .primary) se quedan con su apariencia nativa de AO3 (el skin no los
-  // toca). headerBgColor/headerTextColor quedan sin uso en el CSS generado
-  // por ahora.
+  // .primary) se quedan con su apariencia nativa de AO3, salvo que el
+  // usuario los edite explícitamente (ver generateRegions).
   if (config.textColor) {
     lines.push('');
     lines.push(formatSelectors(SELECTORS.TEXT_COLOR_SELECTORS) + ' {');
@@ -174,4 +174,74 @@ function generateBorders(config: SkinConfig): string {
   lines.push('}');
 
   return lines.join('\n');
+}
+
+const rule = (selectors: readonly string[], declarations: string[]): string[] => [
+  '',
+  formatSelectors(selectors) + ' {',
+  ...declarations.map((d) => `  ${d};`),
+  '}',
+];
+
+// Zonas editadas desde el preview. Cada campo null = no se emite nada y la
+// zona queda con el estilo nativo de AO3. Va al final de la cascada para
+// ganar empates de especificidad contra los bloques genéricos de arriba.
+function generateRegions(config: SkinConfig): string {
+  const lines: string[] = [];
+
+  if (config.headerBgColor) {
+    lines.push(
+      ...rule(SELECTORS.HEADER_BG_SELECTORS, [
+        `background-color: ${config.headerBgColor}`,
+        'background-image: none',
+      ])
+    );
+  }
+  if (config.headerTextColor) {
+    lines.push(...rule(SELECTORS.HEADER_TEXT_SELECTORS, [`color: ${config.headerTextColor}`]));
+  }
+  // AO3 pinta header/barra/botones con texturas (background-image): hay que
+  // quitarlas para que se vea el color elegido.
+  if (config.navBgColor) {
+    lines.push(
+      ...rule(SELECTORS.NAV_BG_SELECTORS, [
+        `background-color: ${config.navBgColor}`,
+        'background-image: none',
+      ])
+    );
+  }
+  if (config.navTextColor) {
+    lines.push(...rule(SELECTORS.NAV_TEXT_SELECTORS, [`color: ${config.navTextColor}`]));
+  }
+  if (config.headingColor) {
+    lines.push(...rule(SELECTORS.HEADING_COLOR_SELECTORS, [`color: ${config.headingColor}`]));
+  }
+  if (config.headingFont) {
+    lines.push(...rule(SELECTORS.HEADING_FONT_SELECTORS, [`font-family: ${config.headingFont}`]));
+  }
+  if (config.blurbBgColor) {
+    lines.push(...rule(SELECTORS.BLURB_BG_SELECTORS, [`background-color: ${config.blurbBgColor}`]));
+  }
+  if (config.tagBgColor || config.tagTextColor) {
+    const declarations: string[] = [];
+    if (config.tagTextColor) declarations.push(`color: ${config.tagTextColor}`);
+    if (config.tagBgColor) {
+      declarations.push(`background-color: ${config.tagBgColor}`, 'text-decoration: none');
+    }
+    lines.push(...rule(SELECTORS.TAG_SELECTORS, declarations));
+  }
+  if (config.buttonBgColor || config.buttonTextColor) {
+    const declarations: string[] = [];
+    if (config.buttonBgColor) {
+      declarations.push(`background-color: ${config.buttonBgColor}`, 'background-image: none');
+    }
+    if (config.buttonTextColor) declarations.push(`color: ${config.buttonTextColor}`);
+    lines.push(...rule(SELECTORS.BUTTON_SELECTORS, declarations));
+  }
+  if (config.filtersBgColor) {
+    lines.push(...rule(SELECTORS.FILTERS_BG_SELECTORS, [`background-color: ${config.filtersBgColor}`]));
+  }
+
+  if (lines.length === 0) return '';
+  return ['/* ----------------- Zonas personalizadas ----------------- */', ...lines].join('\n');
 }

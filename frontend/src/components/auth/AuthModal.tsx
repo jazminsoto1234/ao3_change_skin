@@ -34,7 +34,7 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
     const { error } = await signInWithMagicLink(email);
     if (error) {
       setStatus('error');
-      setErrorMessage('No pudimos enviar el enlace. Intenta de nuevo en unos minutos.');
+      setErrorMessage("We couldn't send the link. Please try again in a few minutes.");
       return;
     }
     setStatus('sent');
@@ -48,21 +48,16 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="Iniciar sesión"
-        className="w-full max-w-sm rounded-2xl border border-line bg-surface p-6 shadow-xl"
+        aria-label="Log in"
+        className="w-full max-w-sm rounded-xl border border-line bg-surface p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-start justify-between">
-          <div className="flex items-center gap-2.5">
-            <span aria-hidden className="grid h-9 w-9 place-items-center rounded-xl bg-blush text-lg">
-              💌
-            </span>
-            <h2 className="text-base font-bold">Guarda tus skins</h2>
-          </div>
+          <h2 className="font-serif text-xl font-semibold">Log in to save your skins</h2>
           <button
             type="button"
             onClick={handleClose}
-            aria-label="Cerrar"
+            aria-label="Close"
             className="text-soft hover:text-ink"
           >
             ✕
@@ -70,36 +65,36 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
         </div>
 
         {status === 'sent' ? (
-          <p className="rounded-xl bg-blush/60 px-3 py-2.5 text-sm text-ink">
-            Revisa tu correo — te enviamos un enlace mágico a <strong>{email}</strong>.
-            Ábrelo desde este mismo dispositivo para iniciar sesión.
+          <p className="rounded-md bg-canvas px-3 py-2.5 text-sm text-ink">
+            Check your inbox — we sent a magic link to <strong>{email}</strong>.
+            Open it on this same device to log in.
           </p>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-3">
             <p className="text-sm text-soft">
-              Con una cuenta puedes guardar tus skins y volver a ellas cuando
-              quieras. Sin contraseñas — te enviamos un enlace por correo.
+              With an account you can keep your skins and come back to them
+              anytime. No passwords — we email you a link.
             </p>
             <label className="flex flex-col gap-1 text-sm font-medium">
-              Correo electrónico
+              Email
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="tu@correo.com"
-                className="rounded-lg border border-line px-3 py-2 text-sm font-normal outline-none focus:border-wine"
+                placeholder="you@example.com"
+                className="h-10 rounded-md border border-line px-3 text-sm font-normal outline-none focus:border-ink"
               />
             </label>
             {status === 'error' && (
-              <p className="text-sm text-red-600">{errorMessage}</p>
+              <p className="text-sm text-red-700">{errorMessage}</p>
             )}
             <button
               type="submit"
               disabled={status === 'sending'}
-              className="rounded-xl bg-wine px-3 py-2.5 text-sm font-semibold text-white shadow-md shadow-wine/20 transition-colors hover:bg-winedark disabled:opacity-50"
+              className="h-10 rounded-md bg-ao3 px-3 text-sm font-semibold text-white transition-colors hover:bg-ao3dark disabled:opacity-50"
             >
-              {status === 'sending' ? 'Enviando…' : '💌 Enviar enlace mágico'}
+              {status === 'sending' ? 'Sending…' : 'Email me a magic link'}
             </button>
           </form>
         )}
